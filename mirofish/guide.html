@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiroFish · 5分钟启动向导</title>
+<style>
+  :root {
+    --bg: #0a0e1a; --bg2: #111827; --bg3: #1a2235; --border: #1e2d45;
+    --accent: #3b82f6; --accent2: #8b5cf6; --accent3: #10b981;
+    --gold: #f59e0b; --red: #ef4444; --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Pro Display', -apple-system, 'PingFang SC', sans-serif; min-height: 100vh; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid var(--border); background: rgba(10,14,26,0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 12px; }
+  .nav-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; }
+  .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .btn-primary { background: var(--accent); color: #fff; }
+
+  .hero { padding: 56px 32px 40px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse at center, rgba(59,130,246,0.12) 0%, transparent 70%); pointer-events: none; }
+  .hero h1 { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; }
+  .hero h1 .hl { background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { margin-top: 12px; color: var(--text2); font-size: 15px; max-width: 560px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+  .time-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; padding: 6px 16px; border-radius: 20px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 13px; font-weight: 600; }
+
+  .main { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 24px; margin-top: 48px; }
+  .step { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: border-color 0.2s; }
+  .step.active { border-color: var(--accent); }
+  .step.done { border-color: var(--accent3); }
+  .step-header { display: flex; align-items: center; gap: 16px; padding: 20px 24px; cursor: pointer; }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  .step.pending .step-num { background: var(--bg3); color: var(--text3); border: 2px solid var(--border); }
+  .step.active .step-num { background: var(--accent); color: #fff; }
+  .step.done .step-num { background: var(--accent3); color: #fff; }
+  .step-title { flex: 1; }
+  .step-title h3 { font-size: 16px; font-weight: 700; }
+  .step-title p { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .step-time { font-size: 11px; color: var(--text3); background: var(--bg3); padding: 3px 8px; border-radius: 4px; }
+  .step-body { padding: 0 24px 24px; display: none; }
+  .step.active .step-body, .step.done .step-body { display: block; }
+
+  /* ── CONTENT IN STEPS ── */
+  .guide-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; }
+  .guide-card h4 { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .guide-card ol { padding-left: 20px; }
+  .guide-card ol li { font-size: 13px; color: var(--text2); line-height: 1.8; }
+  .guide-card a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .guide-card a:hover { text-decoration: underline; }
+
+  .cmd-box { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #7ee787; position: relative; margin: 8px 0; overflow-x: auto; white-space: pre; }
+  .cmd-copy { position: absolute; top: 8px; right: 8px; background: var(--bg3); border: 1px solid var(--border); color: var(--text3); padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: inherit; }
+  .cmd-copy:hover { color: var(--text); }
+
+  /* ── KEY GENERATOR ── */
+  .key-gen { background: var(--bg3); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 20px; }
+  .key-gen h4 { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .key-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .key-row label { font-size: 12px; color: var(--text2); font-weight: 600; }
+  .key-row input { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; font-family: 'SF Mono', monospace; width: 100%; outline: none; transition: border-color 0.2s; }
+  .key-row input:focus { border-color: var(--accent); }
+  .key-row input::placeholder { color: var(--text3); }
+  .gen-btn { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 4px; transition: opacity 0.2s; }
+  .gen-btn:hover { opacity: 0.85; }
+  .generated { margin-top: 14px; display: none; }
+  .generated.show { display: block; }
+  .gen-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* ── SCENARIO QUICK START ── */
+  .scene-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+  @media (max-width: 700px) { .scene-cards { grid-template-columns: 1fr; } }
+  .scene-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; cursor: pointer; transition: all 0.2s; }
+  .scene-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .scene-card .icon { font-size: 22px; margin-bottom: 8px; }
+  .scene-card h4 { font-size: 13px; font-weight: 700; }
+  .scene-card p { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+
+  /* ── DONE SECTION ── */
+  .done-box { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 24px; text-align: center; margin-top: 32px; }
+  .done-box h3 { font-size: 20px; font-weight: 800; color: #10b981; margin-bottom: 8px; }
+  .done-box p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .done-links { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .done-link { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; border: 1px solid; }
+  .link-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .link-outline { background: transparent; color: var(--text2); border-color: var(--border); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin: 32px 0 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.4s; }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+  .tag-free { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+  .tag-req { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.25); }
+
+  .tip { background: rgba(245,158,11,0.08); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 12px; color: var(--text2); line-height: 1.6; margin: 10px 0; }
+
+  .check-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(30,45,69,0.5); }
+  .check-row:last-child { border-bottom: none; }
+  .check-icon { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; margin-top: 1px; }
+  .check-ok { background: rgba(16,185,129,0.15); color: #10b981; }
+  .check-info { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .check-row-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .check-row-text strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🐟</div>
+    <div>
+      <div class="logo-text">MiroFish</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="mirofish_dashboard.html" class="nav-btn btn-outline">控制台</a>
+    <a href="#step1" class="nav-btn btn-primary">开始配置</a>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>5 分钟启动 <span class="hl">群体智能仿真</span></h1>
+  <p>MiroFish 是一个多智能体社会仿真平台。按照下面 4 步走，不需要任何技术背景，就能跑起来金融、地缘政治、推广三大场景。</p>
+  <div class="time-badge">⏱ 预计总耗时：5–8 分钟</div>
+</div>
+
+<div class="main">
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>启动进度</span>
+      <span id="prog-pct">0 / 4 步完成</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="steps" id="steps">
+
+    <!-- ── STEP 1 ── -->
+    <div class="step active" id="step1">
+      <div class="step-header" onclick="toggleStep('step1')">
+        <div class="step-num">1</div>
+        <div class="step-title">
+          <h3>注册阿里云百炼（免费获取 LLM API Key）</h3>
+          <p>MiroFish 的智能体大脑，用这个驱动 AI 推演</p>
+        </div>
+        <span class="step-time">约 2 分钟</span>
+      </div>
+      <div class="step-body">
+        <div class="guide-card">
+          <h4>📋 操作步骤</h4>
+          <ol>
+            <li>打开 <a href="https://bailian.console.aliyun.com/" target="_blank">https://bailian.console.aliyun.com/</a></li>
+            <li>用手机号注册 / 登录阿里云账号</li>
+            <li>进入「模型广场」→ 点击右上角 <strong>「API-KEY 管理」</strong></li>
+            <li>点 <strong>「创建 API-KEY」</strong>，复制生成的 Key（形如 <code style="color:#f59e0b">sk-xxxxxxxxxxxx</code>）</li>
+            <li>把 Key 粘贴到下方第 ③ 步的输入框</li>
+          </ol>
+        </div>
+        <div class="tip">💡 新用户有免费 Token 额度（约 100 万 tokens），跑完整仿真约消耗 5–20 万 tokens，完全够用。</div>
+        <div class="tip">🔄 如果你已有 DeepSeek / OpenAI / Qwen 的 Key，也可以直接用，直接跳到步骤③。</div>
+        <button class="gen-btn" onclick="markDone('step1','step2')" style="margin-top:8px">✅ 我已获取 LLM API Key，下一步</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 2 ── -->
+    <div class="step pending" id="step2">
+      <div class="step-header" onclick="toggleStep('step2')">
+        <div class="step-num">2</div>
+        <div class="step-title">
+          <h3>注册 Zep Cloud（免费获取记忆图谱 API Key）</h3>
+          <p>智能体的长期记忆系统，记录每个 Agent 的状态变化</p>
+        </div>
+        <span class="step-time">约 1 分钟</span>
+      </div>
+      <div class="step-body">
+        <div class="guide-card">
+          <h4>📋 操作步骤</h4>
+          <ol>
+            <li>打开 <a href="https://app.getzep.com/" target="_blank">https://app.getzep.com/</a></li>
+            <li>点 <strong>「Sign up」</strong>，用邮箱或 Google 账号注册</li>
+            <li>注册完成后，进入 Dashboard → 左侧「<strong>API Keys</strong>」</li>
+            <li>点 <strong>「Create API Key」</strong>，复制生成的 Key（形如 <code style="color:#f59e0b">z_xxxxxxxxx</code>）</li>
+            <li>把 Key 粘贴到下方第 ③ 步的输入框</li>
+          </ol>
+        </div>
+        <div class="tip">💡 Zep Cloud 免费计划完全够仿真使用，不需要填信用卡。</div>
+        <button class="gen-btn" onclick="markDone('step2','step3')" style="margin-top:8px">✅ 我已获取 Zep API Key，下一步</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3 ── -->
+    <div class="step pending" id="step3">
+      <div class="step-header" onclick="toggleStep('step3')">
+        <div class="step-num">3</div>
+        <div class="step-title">
+          <h3>填入 API Key → 自动生成配置命令</h3>
+          <p>把你的 Key 填入下方，一键复制命令运行即可</p>
+        </div>
+        <span class="step-time">约 1 分钟</span>
+      </div>
+      <div class="step-body">
+        <div class="key-gen">
+          <h4>🔑 API Key 配置生成器</h4>
+          <div class="key-row">
+            <label>LLM API Key <span class="tag tag-req">必填</span></label>
+            <input type="password" id="llm-key" placeholder="sk-xxxxxxxxxxxxxxxx（阿里百炼 / DeepSeek / OpenAI）" oninput="autoGenerate()">
+          </div>
+          <div class="key-row">
+            <label>Zep Cloud API Key <span class="tag tag-req">必填</span></label>
+            <input type="password" id="zep-key" placeholder="z_xxxxxxxxxxxxxxxxx" oninput="autoGenerate()">
+          </div>
+          <div class="key-row">
+            <label>LLM 模型名称 <span class="tag tag-free">可选，默认 qwen-plus</span></label>
+            <input type="text" id="llm-model" placeholder="qwen-plus（或 deepseek-chat / gpt-4o）" oninput="autoGenerate()">
+          </div>
+          <div class="key-row">
+            <label>LLM API Base URL <span class="tag tag-free">可选，默认阿里百炼</span></label>
+            <input type="text" id="llm-base" placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1" oninput="autoGenerate()">
+          </div>
+
+          <div class="generated" id="generated-section">
+            <div class="gen-label">📋 在终端中运行以下命令（复制全部）</div>
+            <div class="cmd-box" id="gen-cmd">
+              <button class="cmd-copy" onclick="copyCmd('gen-cmd-text')">复制</button>
+              <span id="gen-cmd-text"></span>
+            </div>
+            <div class="tip" style="margin-top:12px">运行后，再执行下方步骤④的启动命令即可。</div>
+          </div>
+        </div>
+        <button class="gen-btn" onclick="markDone('step3','step4')" style="margin-top:12px">✅ 命令已运行完成，下一步</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4 ── -->
+    <div class="step pending" id="step4">
+      <div class="step-header" onclick="toggleStep('step4')">
+        <div class="step-num">4</div>
+        <div class="step-title">
+          <h3>启动 MiroFish 服务 → 开始仿真</h3>
+          <p>最后一步：启动本地服务，上传种子，粘贴 Prompt 跑起来</p>
+        </div>
+        <span class="step-time">约 2 分钟</span>
+      </div>
+      <div class="step-body">
+
+        <div class="guide-card">
+          <h4>① 打开终端，进入 MiroFish 目录</h4>
+          <div class="cmd-box" style="position:relative">
+            <button class="cmd-copy" onclick="copyText('cd /Users/leo/WorkBuddy/20260329130323/MiroFish')">复制</button>
+            cd /Users/leo/WorkBuddy/20260329130323/MiroFish
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <h4>② 启动服务（首次会自动安装依赖，约 30 秒）</h4>
+          <div class="cmd-box" style="position:relative">
+            <button class="cmd-copy" onclick="copyText('python3 mirofish.py start')">复制</button>
+            python3 mirofish.py start
+          </div>
+          <p style="font-size:12px; color: var(--text3); margin-top:8px">看到 <code style="color:#10b981">✅ MiroFish 启动成功，访问 http://localhost:2333</code> 即代表成功</p>
+        </div>
+
+        <div class="guide-card">
+          <h4>③ 浏览器打开 MiroFish 界面</h4>
+          <div class="cmd-box" style="position:relative">
+            <button class="cmd-copy" onclick="copyText('open http://localhost:2333')">复制</button>
+            open http://localhost:2333
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <h4>④ 上传种子数据文件</h4>
+          <p style="font-size:13px; color:var(--text2); line-height:1.7; margin-bottom:10px">在 MiroFish 界面中，找到「上传种子」按钮，选择以下任意场景文件（已自动生成在你的机器上）：</p>
+          <div class="check-row">
+            <div class="check-icon check-ok">✓</div>
+            <div class="check-row-text"><strong>金融场景</strong>：<code>backend/uploads/seeds/financial_seed_*.json</code></div>
+          </div>
+          <div class="check-row">
+            <div class="check-icon check-ok">✓</div>
+            <div class="check-row-text"><strong>地缘政治</strong>：<code>backend/uploads/seeds/geopolitical_seed_*.json</code></div>
+          </div>
+          <div class="check-row">
+            <div class="check-icon check-ok">✓</div>
+            <div class="check-row-text"><strong>推广传播</strong>：<code>backend/uploads/seeds/marketing_seed_*.json</code></div>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <h4>⑤ 粘贴 Prompt 并启动仿真</h4>
+          <p style="font-size:13px; color:var(--text2); line-height:1.7">返回「<a href="mirofish_dashboard.html" style="color:var(--accent)">控制台页面</a>」，选择场景，点击「复制 Prompt」，粘贴到 MiroFish 界面的 Prompt 框，点「开始仿真」即可。</p>
+        </div>
+
+        <!-- Scene Quick Pick -->
+        <div style="margin-top:16px">
+          <div style="font-size:13px; color:var(--text2); margin-bottom:10px; font-weight:600">选一个场景开始：</div>
+          <div class="scene-cards">
+            <div class="scene-card" onclick="window.open('mirofish_dashboard.html#financial')">
+              <div class="icon">📈</div>
+              <h4>金融市场</h4>
+              <p>机构/散户博弈，极端行情演化，崩盘风险预测</p>
+            </div>
+            <div class="scene-card" onclick="window.open('mirofish_dashboard.html#geopolitical')">
+              <div class="icon">🌐</div>
+              <h4>地缘政治</h4>
+              <p>中美科技博弈，出口管制影响，多方利益推演</p>
+            </div>
+            <div class="scene-card" onclick="window.open('mirofish_dashboard.html#marketing')">
+              <div class="icon">📣</div>
+              <h4>推广传播</h4>
+              <p>新品发布，受众反应，口碑扩散模拟</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="gen-btn" onclick="markDone('step4',null)" style="margin-top:16px; background: var(--accent3)">🎉 全部完成，查看成果</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Done Box -->
+  <div class="done-box" id="done-box" style="display:none">
+    <h3>🎉 MiroFish 已就绪！</h3>
+    <p>你的群体智能仿真平台已完全配置完成。三大场景种子数据已生成，Prompt 已优化。<br>现在可以直接开始仿真推演了。</p>
+    <div class="done-links">
+      <a href="mirofish_dashboard.html" class="done-link link-primary">打开控制台</a>
+      <a href="http://localhost:2333" class="done-link link-outline" target="_blank">MiroFish 仿真界面</a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="margin-top:48px; padding-top:32px; border-top: 1px solid var(--border);">
+    <div style="font-size:18px; font-weight:800; margin-bottom:20px;">❓ 常见问题</div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <details style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <summary style="cursor:pointer;font-size:14px;font-weight:700;">python3 mirofish.py start 报错，怎么办？</summary>
+        <div style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7;">
+          最常见的原因是依赖未安装。运行以下命令：<br>
+          <div class="cmd-box" style="margin-top:8px">pip3 install networkx openai anthropic zep-cloud python-dotenv requests tqdm --user</div>
+          安装完再重试启动命令。
+        </div>
+      </details>
+      <details style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <summary style="cursor:pointer;font-size:14px;font-weight:700;">提示 .env 中 API Key 未填写？</summary>
+        <div style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7;">
+          回到步骤③，把 Key 填入生成器，复制命令在终端运行一次。如果手动编辑，运行：
+          <div class="cmd-box" style="margin-top:8px">nano /Users/leo/WorkBuddy/20260329130323/MiroFish/.env</div>
+          按方向键移动到 <code>LLM_API_KEY=your_api_key_here</code> 这行，把 <code>your_api_key_here</code> 替换成你的真实 Key，Ctrl+O 保存，Ctrl+X 退出。
+        </div>
+      </details>
+      <details style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <summary style="cursor:pointer;font-size:14px;font-weight:700;">仿真结果在哪看？</summary>
+        <div style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7;">
+          仿真完成后，MiroFish 界面会自动显示报告，包括：智能体交互图谱、关键事件时间线、最终结论。报告同时保存在 <code>backend/outputs/</code> 目录下，可随时查看。
+        </div>
+      </details>
+      <details style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <summary style="cursor:pointer;font-size:14px;font-weight:700;">能用 DeepSeek 替代阿里云模型吗？</summary>
+        <div style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7;">
+          完全可以。在步骤③的 「LLM 模型名称」填 <code>deepseek-chat</code>，「Base URL」填 <code>https://api.deepseek.com/v1</code>，Key 使用 DeepSeek 的 Key 即可。DeepSeek-V3 价格更低，推理效果也很好。
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script>
+let stepDone = {step1: false, step2: false, step3: false, step4: false};
+
+function toggleStep(id) {
+  const el = document.getElementById(id);
+  if (el.classList.contains('active')) return; // already open
+  el.classList.add('active');
+  el.classList.remove('pending');
+}
+
+function markDone(current, next) {
+  const el = document.getElementById(current);
+  el.classList.remove('active');
+  el.classList.add('done');
+  stepDone[current] = true;
+
+  // Update progress
+  const done = Object.values(stepDone).filter(Boolean).length;
+  document.getElementById('prog-pct').textContent = done + ' / 4 步完成';
+  document.getElementById('prog-fill').style.width = (done * 25) + '%';
+
+  if (next) {
+    const nextEl = document.getElementById(next);
+    nextEl.classList.remove('pending');
+    nextEl.classList.add('active');
+    nextEl.scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    document.getElementById('done-box').style.display = 'block';
+    document.getElementById('done-box').scrollIntoView({behavior:'smooth'});
+  }
+}
+
+function autoGenerate() {
+  const llmKey = document.getElementById('llm-key').value.trim();
+  const zepKey = document.getElementById('zep-key').value.trim();
+  const model = document.getElementById('llm-model').value.trim() || 'qwen-plus';
+  const base = document.getElementById('llm-base').value.trim() || 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+  const path = '/Users/leo/WorkBuddy/20260329130323/MiroFish/.env';
+
+  if (!llmKey && !zepKey) {
+    document.getElementById('generated-section').classList.remove('show');
+    return;
+  }
+
+  let cmds = [];
+  if (llmKey) cmds.push(`sed -i '' 's|LLM_API_KEY=.*|LLM_API_KEY=${llmKey}|' '${path}'`);
+  if (zepKey) cmds.push(`sed -i '' 's|ZEP_API_KEY=.*|ZEP_API_KEY=${zepKey}|' '${path}'`);
+  if (model !== 'qwen-plus') cmds.push(`sed -i '' 's|LLM_MODEL_NAME=.*|LLM_MODEL_NAME=${model}|' '${path}'`);
+  if (base !== 'https://dashscope.aliyuncs.com/compatible-mode/v1') cmds.push(`sed -i '' 's|LLM_BASE_URL=.*|LLM_BASE_URL=${base}|' '${path}'`);
+  cmds.push(`echo "✅ .env 配置完成，Key 已写入！"`);
+
+  document.getElementById('gen-cmd-text').textContent = cmds.join('\n');
+  document.getElementById('generated-section').classList.add('show');
+}
+
+function copyCmd(id) {
+  const text = document.getElementById(id).textContent;
+  copyText(text);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    // brief flash feedback
+    const btns = document.querySelectorAll('.cmd-copy');
+    btns.forEach(b => { if(b.textContent.trim() !== '已复制') {} });
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  // visual feedback
+  event && event.target && (event.target.textContent = '✓ 已复制');
+  setTimeout(() => { event && event.target && (event.target.textContent = '复制'); }, 1500);
+}
+</script>
+
+</body>
+</html>

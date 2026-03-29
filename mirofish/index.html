@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiroFish 群体智能仿真 · 三场景控制台</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --accent3: #10b981;
+    --gold: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'SF Pro Display', -apple-system, 'PingFang SC', sans-serif; min-height: 100vh; }
+
+  /* ── TOP NAV ── */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid var(--border); background: rgba(10,14,26,0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .nav-status { display: flex; gap: 8px; align-items: center; }
+  .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+  .badge-ready { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-ai { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+
+  /* ── HERO ── */
+  .hero { padding: 48px 32px 32px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 400px; background: radial-gradient(ellipse at center, rgba(59,130,246,0.12) 0%, transparent 70%); pointer-events: none; }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero h1 span { background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { margin-top: 12px; color: var(--text2); font-size: 15px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+  .hero-meta { display: flex; justify-content: center; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+  .meta-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* ── MAIN GRID ── */
+  .main { padding: 0 32px 48px; max-width: 1400px; margin: 0 auto; }
+  
+  /* ── SCENE TABS ── */
+  .scene-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 10px 20px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .tab:hover { border-color: var(--accent); color: var(--text); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tab.geo.active { background: var(--accent2); border-color: var(--accent2); }
+  .tab.mkt.active { background: var(--accent3); border-color: var(--accent3); }
+
+  /* ── SCENE PANELS ── */
+  .scene-panel { display: none; }
+  .scene-panel.active { display: block; }
+
+  /* ── STATS ROW ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; position: relative; overflow: hidden; }
+  .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .stat-card.blue::after { background: var(--accent); }
+  .stat-card.purple::after { background: var(--accent2); }
+  .stat-card.green::after { background: var(--accent3); }
+  .stat-card.gold::after { background: var(--gold); }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* ── TWO-COL LAYOUT ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+  /* ── CARD ── */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-blue { background: var(--accent); }
+  .dot-purple { background: var(--accent2); }
+  .dot-green { background: var(--accent3); }
+  .dot-gold { background: var(--gold); }
+  .dot-red { background: var(--red); }
+
+  /* ── AGENT LIST ── */
+  .agent-list { display: flex; flex-direction: column; gap: 8px; }
+  .agent-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg3); border-radius: 8px; border: 1px solid transparent; transition: border-color 0.2s; }
+  .agent-item:hover { border-color: var(--border); }
+  .agent-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .agent-info { flex: 1; min-width: 0; }
+  .agent-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .agent-role { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .agent-bar-wrap { width: 80px; flex-shrink: 0; }
+  .agent-bar { height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+  .agent-bar-inner { height: 100%; border-radius: 2px; }
+  .agent-pct { font-size: 10px; color: var(--text3); text-align: right; margin-top: 3px; }
+
+  /* ── SCENARIO FLOW ── */
+  .flow-steps { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 14px; position: relative; }
+  .flow-step:not(:last-child) .flow-line { position: absolute; left: 15px; top: 30px; bottom: -4px; width: 2px; background: var(--border); }
+  .flow-num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; z-index: 1; }
+  .flow-content { flex: 1; padding-bottom: 18px; }
+  .flow-label { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .flow-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  /* ── SEED PREVIEW ── */
+  .seed-text { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 11.5px; line-height: 1.7; color: var(--text2); font-family: 'SF Mono', Monaco, 'Courier New', monospace; max-height: 200px; overflow-y: auto; }
+  .seed-text::-webkit-scrollbar { width: 4px; }
+  .seed-text::-webkit-scrollbar-track { background: transparent; }
+  .seed-text::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── PROMPT BOX ── */
+  .prompt-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; line-height: 1.7; color: var(--text2); max-height: 260px; overflow-y: auto; white-space: pre-wrap; }
+  .prompt-box::-webkit-scrollbar { width: 4px; }
+  .prompt-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .copy-btn { margin-top: 10px; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text2); font-size: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .copy-btn:hover { background: var(--bg); color: var(--text); border-color: var(--accent); }
+  .copy-btn.copied { background: rgba(16,185,129,0.1); border-color: var(--accent3); color: var(--accent3); }
+
+  /* ── RISK ── */
+  .risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .risk-item { padding: 10px 12px; background: var(--bg3); border-radius: 8px; border-left: 3px solid; }
+  .risk-h { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+  .risk-d { font-size: 11px; color: var(--text3); line-height: 1.4; }
+  .risk-high { border-color: #ef4444; }
+  .risk-med { border-color: #f59e0b; }
+  .risk-low { border-color: #10b981; }
+
+  /* ── SCENARIO BAR CHART ── */
+  .scenario-list { display: flex; flex-direction: column; gap: 10px; }
+  .scenario-item { display: flex; flex-direction: column; gap: 5px; }
+  .scenario-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .scenario-name { font-size: 12px; font-weight: 600; }
+  .scenario-pct { font-size: 12px; color: var(--text3); }
+  .scenario-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .scenario-bar-inner { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .scenario-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+
+  /* ── KOL TABLE ── */
+  .kol-table { width: 100%; border-collapse: collapse; }
+  .kol-table th { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+  .kol-table td { font-size: 12px; padding: 8px; border-bottom: 1px solid rgba(30,45,69,0.5); vertical-align: top; line-height: 1.4; }
+  .kol-table tr:last-child td { border-bottom: none; }
+  .platform-tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .tag-xhs { background: rgba(255,77,77,0.15); color: #ff4d4d; }
+  .tag-bilibili { background: rgba(0,161,214,0.15); color: #00a1d6; }
+  .tag-zhihu { background: rgba(0,148,255,0.15); color: #0094ff; }
+  .tag-weibo { background: rgba(255,101,0,0.15); color: #ff6500; }
+  .tag-douyin { background: rgba(255,255,255,0.1); color: #e0e0e0; }
+
+  /* ── ENTITY MAP ── */
+  .entity-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .entity-chip { padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600; border: 1px solid; }
+  .chip-nation { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
+  .chip-org { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); color: #a78bfa; }
+  .chip-tech { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #34d399; }
+  .chip-event { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fbbf24; }
+  .chip-person { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+  /* ── CMD BLOCK ── */
+  .cmd-block { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; color: #c9d1d9; line-height: 1.8; }
+  .cmd-line::before { content: '$ '; color: #58a6ff; }
+  .cmd-comment { color: #8b949e; }
+
+  /* ── FOOTER ── */
+  .footer-section { margin-top: 32px; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .footer-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .env-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .env-item { background: var(--bg3); border-radius: 8px; padding: 12px 14px; }
+  .env-key { font-family: monospace; font-size: 12px; color: #60a5fa; margin-bottom: 4px; }
+  .env-val { font-size: 12px; color: var(--text3); }
+  .env-required { display: inline-block; padding: 1px 6px; border-radius: 3px; background: rgba(239,68,68,0.15); color: #f87171; font-size: 10px; font-weight: 600; margin-left: 6px; }
+  .env-optional { display: inline-block; padding: 1px 6px; border-radius: 3px; background: rgba(16,185,129,0.15); color: #34d399; font-size: 10px; font-weight: 600; margin-left: 6px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .pulse { animation: pulse 2s infinite; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .scene-panel.active { animation: fadeIn 0.3s ease; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+    .main { padding: 0 16px 48px; }
+    .topbar { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">🐟</div>
+    <div>
+      <div class="logo-text">MiroFish</div>
+      <div class="logo-sub">Group Intelligence Simulation Platform</div>
+    </div>
+  </div>
+  <div class="nav-status">
+    <span class="status-badge badge-ready">● 种子已生成</span>
+    <span class="status-badge badge-ai">GraphRAG Ready</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>三场景<span>群体智能</span>仿真控制台</h1>
+  <p>已为金融市场、地缘政治推演、推广传播效果三大场景完成种子数据采集、本体配置与智能体 Prompt 定制</p>
+  <div class="hero-meta">
+    <div class="meta-item"><div class="meta-dot" style="background:#3b82f6"></div>金融市场仿真</div>
+    <div class="meta-item"><div class="meta-dot" style="background:#8b5cf6"></div>地缘政治推演</div>
+    <div class="meta-item"><div class="meta-dot" style="background:#10b981"></div>推广传播预测</div>
+    <div class="meta-item"><div class="meta-dot" style="background:#f59e0b"></div>生成时间：2026-03-29 17:24</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- SCENE TABS -->
+  <div class="scene-tabs">
+    <div class="tab active" onclick="switchTab('fin')">📈 金融市场</div>
+    <div class="tab geo" onclick="switchTab('geo')">🌐 地缘政治</div>
+    <div class="tab mkt" onclick="switchTab('mkt')">📣 推广传播</div>
+  </div>
+
+  <!-- ============= FINANCIAL PANEL ============= -->
+  <div class="scene-panel active" id="panel-fin">
+    <div class="stats-row">
+      <div class="stat-card blue">
+        <div class="stat-label">仿真场景</div>
+        <div class="stat-value">A股市场</div>
+        <div class="stat-sub">近30天数据窗口</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">智能体角色</div>
+        <div class="stat-value">5类</div>
+        <div class="stat-sub">机构/散户/分析师/监管/量化</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">推荐仿真规模</div>
+        <div class="stat-value">50人</div>
+        <div class="stat-sub">20轮演化</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">本体实体类型</div>
+        <div class="stat-value">8种</div>
+        <div class="stat-sub">Company/Regulator/Fund/Policy...</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Agents -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-blue"></div>智能体人设配置</div>
+        <div class="agent-list">
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(59,130,246,0.15)">🏦</div>
+            <div class="agent-info"><div class="agent-name">机构投资者</div><div class="agent-role">价值导向 · 风控约束 · 基本面分析</div></div>
+            <div class="agent-bar-wrap"><div class="agent-bar"><div class="agent-bar-inner" style="width:80%;background:#3b82f6"></div></div><div class="agent-pct">占比 30%</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15)">👤</div>
+            <div class="agent-info"><div class="agent-name">散户投资者</div><div class="agent-role">情绪驱动 · 锚定效应 · 跟风倾向</div></div>
+            <div class="agent-bar-wrap"><div class="agent-bar"><div class="agent-bar-inner" style="width:60%;background:#f59e0b"></div></div><div class="agent-pct">占比 40%</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(139,92,246,0.15)">📝</div>
+            <div class="agent-info"><div class="agent-name">卖方分析师</div><div class="agent-role">中立研究 · 机构利益影响 · 迟发风险</div></div>
+            <div class="agent-bar-wrap"><div class="agent-bar"><div class="agent-bar-inner" style="width:30%;background:#8b5cf6"></div></div><div class="agent-pct">占比 10%</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(16,185,129,0.15)">⚖️</div>
+            <div class="agent-info"><div class="agent-name">监管机构</div><div class="agent-role">维稳优先 · 极端波动干预冲动</div></div>
+            <div class="agent-bar-wrap"><div class="agent-bar"><div class="agent-bar-inner" style="width:15%;background:#10b981"></div></div><div class="agent-pct">占比 5%</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15)">🤖</div>
+            <div class="agent-info"><div class="agent-name">量化基金</div><div class="agent-role">技术面信号 · 止损机制 · 放大波动</div></div>
+            <div class="agent-bar-wrap"><div class="agent-bar"><div class="agent-bar-inner" style="width:35%;background:#ef4444"></div></div><div class="agent-pct">占比 15%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenarios -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-gold"></div>市场走向情景预设</div>
+        <div class="scenario-list">
+          <div class="scenario-item">
+            <div class="scenario-header"><span class="scenario-name" style="color:#10b981">🟢 乐观情景：政策驱动牛市</span><span class="scenario-pct">35%</span></div>
+            <div class="scenario-bar"><div class="scenario-bar-inner" style="width:35%;background:#10b981"></div></div>
+            <div class="scenario-desc">央行降准+财政刺激双轮驱动，外资持续流入，A股突破前高。机构率先布局，带动散户跟进</div>
+          </div>
+          <div class="scenario-item">
+            <div class="scenario-header"><span class="scenario-name" style="color:#f59e0b">🟡 中性情景：震荡筑底</span><span class="scenario-pct">45%</span></div>
+            <div class="scenario-bar"><div class="scenario-bar-inner" style="width:45%;background:#f59e0b"></div></div>
+            <div class="scenario-desc">宏观数据分化，资金情绪拉锯，板块轮动明显。结构性机会优于整体行情</div>
+          </div>
+          <div class="scenario-item">
+            <div class="scenario-header"><span class="scenario-name" style="color:#ef4444">🔴 悲观情景：外部冲击下行</span><span class="scenario-pct">20%</span></div>
+            <div class="scenario-bar"><div class="scenario-bar-inner" style="width:20%;background:#ef4444"></div></div>
+            <div class="scenario-desc">地缘事件升级或美联储政策超预期，北向资金流出，量化止损触发，市场恐慌蔓延</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Risk -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-red"></div>核心风险因子（智能体内置）</div>
+        <div class="risk-grid">
+          <div class="risk-item risk-high"><div class="risk-h">北向资金大幅流出</div><div class="risk-d">触发量化基金止损链，散户恐慌性抛售</div></div>
+          <div class="risk-item risk-high"><div class="risk-h">监管政策突变</div><div class="risk-d">行业整顿导致估值重构，信息不对称加剧</div></div>
+          <div class="risk-item risk-med"><div class="risk-h">散户情绪反转</div><div class="risk-d">社交媒体舆情转向，跟风效应反噬</div></div>
+          <div class="risk-item risk-med"><div class="risk-h">分析师羊群效应</div><div class="risk-d">多家券商同步下调目标价，形成负反馈</div></div>
+          <div class="risk-item risk-low"><div class="risk-h">流动性分层</div><div class="risk-d">小盘股流动性枯竭，机构撤离加剧波动</div></div>
+          <div class="risk-item risk-low"><div class="risk-h">信息不对称扩大</div><div class="risk-d">内幕信息提前价格化，散户信息滞后</div></div>
+        </div>
+      </div>
+
+      <!-- Prompt -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-blue"></div>MiroFish 仿真需求 Prompt</div>
+        <div class="prompt-box" id="prompt-fin">你是一位专业的金融市场分析师，正在主导一次基于多智能体仿真的市场态势推演。
+
+【仿真目标】
+1. 预测市场参与者（机构/散户/分析师/监管者）在当前宏观环境和行业动态下的行为模式
+2. 识别潜在的市场拐点信号和极端风险情景
+3. 评估政策/事件冲击对不同类型市场参与者的差异化影响
+
+【关键分析维度】
+- 资金流向：北向/南向/内资机构的仓位变化趋势
+- 估值与情绪：当前市场情绪与基本面估值的背离程度
+- 政策敏感性：哪些政策信号会触发大幅波动
+- 羊群效应：散户与机构行为的背离和共振时刻
+
+【报告产出要求】
+1. 各类市场参与者的行为演化路径
+2. 3种可能的市场走向情景（乐观/中性/悲观）及概率估算
+3. 最需警惕的尾部风险
+4. 对各类型投资者的行动建议</div>
+        <button class="copy-btn" onclick="copyPrompt('prompt-fin', this)">📋 复制 Prompt</button>
+      </div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-dot dot-green"></div>快速启动命令</div>
+      <div class="cmd-block">
+        <div class="cmd-comment"># 生成金融场景种子数据文件</div>
+        <div class="cmd-line">cd /Users/leo/WorkBuddy/20260329130323/MiroFish</div>
+        <div class="cmd-line">python3 seed_pipelines/financial_seed_pipeline.py</div>
+        <br>
+        <div class="cmd-comment"># 查看生成的种子文件路径</div>
+        <div class="cmd-line">ls backend/uploads/seeds/financial_seed_*.txt</div>
+        <br>
+        <div class="cmd-comment"># 启动 MiroFish 后端服务</div>
+        <div class="cmd-line">python3 mirofish.py start</div>
+        <br>
+        <div class="cmd-comment"># 访问 → 上传 seed_*.txt → 粘贴上方 Prompt → 运行仿真</div>
+        <div class="cmd-comment"># http://localhost:8000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= GEOPOLITICAL PANEL ============= -->
+  <div class="scene-panel" id="panel-geo">
+    <div class="stats-row">
+      <div class="stat-card purple">
+        <div class="stat-label">推演议题</div>
+        <div class="stat-value" style="font-size:20px">中美科技博弈</div>
+        <div class="stat-sub">半导体脱钩与供应链重组</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">行为体数量</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub">美/中/台/欧/日/韩/荷兰</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">事件条目</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub">含3条高风险事件</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">历史先例参考</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub">美日/冷战/技术封锁案例</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Entities -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-purple"></div>本体实体图谱</div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">国家行为体</div>
+          <div class="entity-chips">
+            <span class="entity-chip chip-nation">🇺🇸 美国</span>
+            <span class="entity-chip chip-nation">🇨🇳 中国</span>
+            <span class="entity-chip chip-nation">🇹🇼 台湾</span>
+            <span class="entity-chip chip-nation">🇪🇺 欧盟</span>
+            <span class="entity-chip chip-nation">🇯🇵 日本</span>
+            <span class="entity-chip chip-nation">🇰🇷 韩国</span>
+            <span class="entity-chip chip-nation">🇳🇱 荷兰</span>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">关键企业/机构</div>
+          <div class="entity-chips">
+            <span class="entity-chip chip-org">台积电 TSMC</span>
+            <span class="entity-chip chip-org">英伟达 Nvidia</span>
+            <span class="entity-chip chip-org">ASML</span>
+            <span class="entity-chip chip-org">华为</span>
+            <span class="entity-chip chip-org">中芯国际</span>
+            <span class="entity-chip chip-org">美商务部</span>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">核心技术节点</div>
+          <div class="entity-chips">
+            <span class="entity-chip chip-tech">EUV光刻机</span>
+            <span class="entity-chip chip-tech">3nm/2nm工艺</span>
+            <span class="entity-chip chip-tech">AI芯片</span>
+            <span class="entity-chip chip-tech">HBM内存</span>
+            <span class="entity-chip chip-tech">稀土矿产</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">关键事件</div>
+          <div class="entity-chips">
+            <span class="entity-chip chip-event">出口管制扩大</span>
+            <span class="entity-chip chip-event">芯片法案</span>
+            <span class="entity-chip chip-event">矿产反制</span>
+            <span class="entity-chip chip-event">台积电美厂</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viewpoints -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-gold"></div>七视角强制分化（防仿真失真）</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(59,130,246,0.2);color:#60a5fa">🇺🇸</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">美国鹰派</div><div class="flow-desc">技术领导地位维护，《芯片法案》补贴本土制造，减少中国AI芯片获取</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(239,68,68,0.2);color:#f87171">🇨🇳</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">中国实用派</div><div class="flow-desc">举国之力推进国产化，战略耐心，同时维持经济接触，避免全面脱钩</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(16,185,129,0.2);color:#34d399">🇹🇼</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">台湾战略模糊</div><div class="flow-desc">维持不可替代性，在美中间对冲，极度谨慎避免成为直接冲突目标</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(245,158,11,0.2);color:#fbbf24">🇪🇺</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">欧盟战略自主</div><div class="flow-desc">依赖美国安全但保持经济独立，发展自有半导体产业链</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(139,92,246,0.2);color:#a78bfa">🇯🇵🇰🇷</div>
+            <div class="flow-content"><div class="flow-label">日韩同盟内部分歧</div><div class="flow-desc">安全上跟随美国，但经济上对华依赖深，执行力度存在弹性空间</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Timeline -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-red"></div>种子事件时间线（已录入）</div>
+        <div class="agent-list">
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15);font-size:12px">🚨</div>
+            <div class="agent-info"><div class="agent-name">美国扩大芯片出口管制</div><div class="agent-role">2026-03-19 · 官方声明 · 🟠 高风险</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15);font-size:12px">⚡</div>
+            <div class="agent-info"><div class="agent-name">中国镓锗锑矿产出口管制</div><div class="agent-role">2026-03-21 · 官方声明 · 🟠 高风险（反制措施）</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15);font-size:12px">🏭</div>
+            <div class="agent-info"><div class="agent-name">台积电亚利桑那第三座晶圆厂开工</div><div class="agent-role">2026-03-24 · 企业公告 · 🟡 中等风险</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(139,92,246,0.15);font-size:12px">🔬</div>
+            <div class="agent-info"><div class="agent-name">华为麒麟X90芯片量产消息</div><div class="agent-role">2026-03-25 · 技术情报 · 🟠 高风险</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(16,185,129,0.15);font-size:12px">📊</div>
+            <div class="agent-info"><div class="agent-name">荷兰议会通过ASML限制令</div><div class="agent-role">2026-03-26 · 立法动态 · 🟡 中等风险</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(59,130,246,0.15);font-size:12px">💬</div>
+            <div class="agent-info"><div class="agent-name">G7峰会联合半导体声明</div><div class="agent-role">2026-03-27 · 外交动态 · 🟡 中等风险</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15);font-size:12px">💰</div>
+            <div class="agent-info"><div class="agent-name">中国增加对华芯片投资至3000亿</div><div class="agent-role">2026-03-28 · 政策动态 · 🟡 中等风险</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-purple"></div>MiroFish 仿真需求 Prompt</div>
+        <div class="prompt-box" id="prompt-geo">你是一位专业的地缘政治分析师和战略情报研究员，正在主持一次高保真多行为体态势推演。
+
+【推演核心议题】
+中美半导体科技博弈：出口管制升级与供应链重组
+
+【行为体阵列】
+• 美国（鹰派政府）：维护技术霸权，推进《芯片法案》
+• 中国（实用主义）：突破封锁，推进科技自主
+• 台湾/台积电：战略模糊，维持不可替代性
+• 欧盟：战略自主，保持经济独立空间
+• 日韩：安全跟随，经济对冲
+
+【推演任务】
+1. 各行为体在6个月内的战略决策路径
+2. 最可能引发局势升级的触发点
+3. 供应链重组的3种地缘结果预测
+4. 对全球半导体产业格局的长期影响
+
+【分析要求】
+- 每个行为体必须遵守其核心利益和红线约束
+- 明确标注信息可信度
+- 识别各方的战略欺骗与信号传递行为</div>
+        <button class="copy-btn" onclick="copyPrompt('prompt-geo', this)">📋 复制 Prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= MARKETING PANEL ============= -->
+  <div class="scene-panel" id="panel-mkt">
+    <div class="stats-row">
+      <div class="stat-card green">
+        <div class="stat-label">产品</div>
+        <div class="stat-value" style="font-size:18px">QuietAir Pro</div>
+        <div class="stat-sub">轻音降噪耳机 · 299元</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">受众细分</div>
+        <div class="stat-value">5</div>
+        <div class="stat-sub">白领/学生/宝妈/健身/老年</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">KOL矩阵</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub">跨平台 · 分层布局</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-label">目标GMV</div>
+        <div class="stat-value">500万</div>
+        <div class="stat-sub">首月 · 小红书冷启动</div>
+      </div>
+    </div>
+
+    <div class="three-col">
+      <!-- Segments -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-green"></div>受众细分画像</div>
+        <div class="agent-list">
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(59,130,246,0.15)">👔</div>
+            <div class="agent-info"><div class="agent-name">通勤白领</div><div class="agent-role">28-35岁 · 性价比优先 · ~300万人</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(16,185,129,0.15)">🎓</div>
+            <div class="agent-info"><div class="agent-name">大学生</div><div class="agent-role">18-24岁 · 极致低价 · ~500万人</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15)">👶</div>
+            <div class="agent-info"><div class="agent-name">居家宝妈</div><div class="agent-role">28-38岁 · 专注+轻便 · ~200万人</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15)">🏃</div>
+            <div class="agent-info"><div class="agent-name">健身爱好者</div><div class="agent-role">22-35岁 · 防水轻量 · ~150万人</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(139,92,246,0.15)">👴</div>
+            <div class="agent-info"><div class="agent-name">中老年用户</div><div class="agent-role">50+岁 · 操作简单 · 子女决策</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOL -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-blue"></div>KOL 分层矩阵</div>
+        <table class="kol-table">
+          <thead>
+            <tr><th>KOL</th><th>平台</th><th>策略</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>数码老爸</strong><br><span style="color:var(--text3);font-size:11px">80万粉 · 严肃测评</span></td>
+              <td><span class="platform-tag tag-bilibili">B站</span></td>
+              <td style="font-size:11px">横向对比测评，信任度背书</td>
+            </tr>
+            <tr>
+              <td><strong>通勤日记_小美</strong><br><span style="color:var(--text3);font-size:11px">45万粉 · 生活方式</span></td>
+              <td><span class="platform-tag tag-xhs">小红书</span></td>
+              <td style="font-size:11px">地铁日常vlog，产品自然植入</td>
+            </tr>
+            <tr>
+              <td><strong>测评师老王</strong><br><span style="color:var(--text3);font-size:11px">120万粉 · 开箱</span></td>
+              <td><span class="platform-tag tag-douyin">抖音</span></td>
+              <td style="font-size:11px">15秒开箱+价格冲击内容</td>
+            </tr>
+            <tr>
+              <td><strong>知乎数码答主</strong><br><span style="color:var(--text3);font-size:11px">专业背书</span></td>
+              <td><span class="platform-tag tag-zhihu">知乎</span></td>
+              <td style="font-size:11px">「300元降噪耳机怎么选」长文</td>
+            </tr>
+            <tr>
+              <td><strong>上班族的一天</strong><br><span style="color:var(--text3);font-size:11px">62万粉</span></td>
+              <td><span class="platform-tag tag-weibo">微博</span></td>
+              <td style="font-size:11px">职场效率场景种草</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Crisis & Barriers -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-red"></div>消费者阻力清单（核心）</div>
+        <div class="agent-list">
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15);font-size:18px">🤔</div>
+            <div class="agent-info"><div class="agent-name">新品牌零信任</div><div class="agent-role">「没听说过这品牌，会不会翻车」— 最高阻力</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(239,68,68,0.15);font-size:18px">📉</div>
+            <div class="agent-info"><div class="agent-name">价格==质量锚定</div><div class="agent-role">「299太便宜，效果肯定差」— 心理定价偏见</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15);font-size:18px">🔧</div>
+            <div class="agent-info"><div class="agent-name">售后顾虑</div><div class="agent-role">「出问题怎么退换，客服找得到吗」</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(245,158,11,0.15);font-size:18px">📱</div>
+            <div class="agent-info"><div class="agent-name">竞品路径依赖</div><div class="agent-role">「身边人都用索尼/苹果，换了会不合群」</div></div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-avatar" style="background:rgba(16,185,129,0.15);font-size:18px">🎁</div>
+            <div class="agent-info"><div class="agent-name">促销反感</div><div class="agent-role">「广告太多，越推越不想买」— 过度营销</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Crisis Plan -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-gold"></div>危机预案（仿真内置）</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(239,68,68,0.2);color:#f87171">⚡</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">负面测评扩散</div><div class="flow-desc">触发条件：1篇中型KOL差评。预案：2小时内联系KOL沟通，免费换货+公开回应，72小时内邀请3位正向KOL发测评</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(245,158,11,0.2);color:#fbbf24">📦</div>
+            <div class="flow-line"></div>
+            <div class="flow-content"><div class="flow-label">供应链断货</div><div class="flow-desc">触发条件：首周销量超5000件。预案：提前备货2万件，开启预售锁量，排期告知用户</div></div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num" style="background:rgba(16,185,129,0.2);color:#34d399">🔍</div>
+            <div class="flow-content"><div class="flow-label">同行恶意对比</div><div class="flow-desc">触发条件：竞品营销号攻击。预案：用户真实测评数据反驳，不在官方渠道参与互撕</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt -->
+      <div class="card">
+        <div class="card-title"><div class="card-title-dot dot-green"></div>MiroFish 仿真需求 Prompt</div>
+        <div class="prompt-box" id="prompt-mkt">你是一位经验丰富的消费品营销策略师，正在为一款新品耳机的上市传播进行多智能体仿真推演。
+
+【产品信息】
+QuietAir Pro · 轻量降噪耳机 · 定价299元 · 品牌零知名度
+
+【仿真目标】
+1. 预测不同KOL内容策略在小红书的传播扩散路径
+2. 识别各细分受众群体的决策触发点和阻力来源
+3. 模拟危机事件（负面测评爆发）下的舆情演化
+4. 预测首月GMV 500万目标的可达性及最优路径
+
+【智能体群体设定】
+- 通勤白领（性价比决策）：30%
+- 大学生（极致低价）：25%
+- 居家宝妈（专注场景）：20%
+- 健身爱好者（运动场景）：15%
+- 中老年用户（简单操作）：10%
+
+【关键仿真变量】
+- KOL内容真实感 vs 广告感的阈值
+- 价格锚定偏见对转化的阻力系数
+- 口碑传播的社交网络扩散速度
+
+【报告要求】
+1. 最优冷启动内容矩阵推荐
+2. 最可能引发病毒传播的内容形式
+3. 危机情景下的损失预测和应对效果</div>
+        <button class="copy-btn" onclick="copyPrompt('prompt-mkt', this)">📋 复制 Prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= SETUP SECTION ============= -->
+  <div class="footer-section">
+    <div class="footer-title">⚙️ 启动前必填配置（.env）</div>
+    <div class="env-grid">
+      <div class="env-item">
+        <div class="env-key">LLM_API_KEY <span class="env-required">必填</span></div>
+        <div class="env-val">推荐：DeepSeek（V3，极低成本）或阿里百炼（qwen-plus）<br>DeepSeek: platform.deepseek.com → API Keys</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">ZEP_API_KEY <span class="env-required">必填</span></div>
+        <div class="env-val">免费注册：getzep.com → Dashboard → API Keys<br>用于智能体长期记忆（对话历史）</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">LLM_MODEL_NAME <span class="env-optional">可选</span></div>
+        <div class="env-val">默认：deepseek-chat<br>备选：qwen-plus / gpt-4o-mini</div>
+      </div>
+      <div class="env-item">
+        <div class="env-key">SIMULATION_ROUNDS <span class="env-optional">可选</span></div>
+        <div class="env-val">默认：20（地缘政治推荐30，推广可用15）<br>轮数越多仿真越深但更耗费Token</div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <div class="cmd-block">
+        <div class="cmd-comment"># Step 1：填入 API Keys</div>
+        <div class="cmd-line">nano /Users/leo/WorkBuddy/20260329130323/MiroFish/.env</div>
+        <br>
+        <div class="cmd-comment"># Step 2：启动服务（首次运行会安装依赖）</div>
+        <div class="cmd-line">cd /Users/leo/WorkBuddy/20260329130323/MiroFish && python3 mirofish.py start</div>
+        <br>
+        <div class="cmd-comment"># Step 3：选择场景生成种子，上传到 MiroFish 界面</div>
+        <div class="cmd-line">python3 mirofish.py seed financial       # 或 geopolitical / marketing</div>
+        <br>
+        <div class="cmd-comment"># Step 4：复制上方对应场景的 Prompt → 粘贴到 MiroFish → 运行仿真</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchTab(scene) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.scene-panel').forEach(p => p.classList.remove('active'));
+  const panelMap = {fin: 0, geo: 1, mkt: 2};
+  document.querySelectorAll('.tab')[panelMap[scene]].classList.add('active');
+  document.getElementById('panel-' + scene).classList.add('active');
+}
+
+function copyPrompt(id, btn) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '✅ 已复制';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '📋 复制 Prompt';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
