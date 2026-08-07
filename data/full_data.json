@@ -238,123 +238,123 @@
   ],
   "weather": {
     "ormuz": {
-      "temperature": "34°C",
-      "feels_like": "41°C",
-      "wind": "7 km/h 东南",
+      "temperature": "32°C",
+      "feels_like": "40°C",
+      "wind": "14 km/h 东北",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "晴朗",
       "condition_icon": "☀️",
-      "humidity": "67%",
-      "updated": "2026-08-06T23:47:34.108872Z",
+      "humidity": "80%",
+      "updated": "2026-08-07T02:03:10.516382Z",
       "data_source": "Open-Meteo API"
     },
     "malacca": {
-      "temperature": "24°C",
-      "feels_like": "28°C",
-      "wind": "8 km/h 南",
+      "temperature": "28°C",
+      "feels_like": "32°C",
+      "wind": "9 km/h 南",
       "wave": "N/A",
       "visibility": "10 km",
-      "condition": "阴天",
-      "condition_icon": "☁️",
-      "humidity": "98%",
-      "updated": "2026-08-06T23:47:34.726106Z",
+      "condition": "多云",
+      "condition_icon": "⛅",
+      "humidity": "73%",
+      "updated": "2026-08-07T02:03:11.041696Z",
       "data_source": "Open-Meteo API"
     },
     "suez": {
       "temperature": "25°C",
-      "feels_like": "29°C",
-      "wind": "2 km/h 北",
+      "feels_like": "28°C",
+      "wind": "2 km/h 西北",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "晴朗",
       "condition_icon": "☀️",
-      "humidity": "73%",
-      "updated": "2026-08-06T23:47:35.343157Z",
+      "humidity": "77%",
+      "updated": "2026-08-07T02:03:11.516263Z",
       "data_source": "Open-Meteo API"
     },
     "panama": {
-      "temperature": "25°C",
-      "feels_like": "29°C",
-      "wind": "12 km/h 西北",
+      "temperature": "24°C",
+      "feels_like": "30°C",
+      "wind": "3 km/h 西北",
       "wave": "N/A",
       "visibility": "10 km",
-      "condition": "中雨",
+      "condition": "小雨",
       "condition_icon": "🌧️",
-      "humidity": "95%",
-      "updated": "2026-08-06T23:47:35.957229Z",
+      "humidity": "96%",
+      "updated": "2026-08-07T02:03:12.239158Z",
       "data_source": "Open-Meteo API"
     },
     "mandeb": {
       "temperature": "32°C",
       "feels_like": "38°C",
-      "wind": "7 km/h 西",
+      "wind": "13 km/h 北",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "晴朗",
       "condition_icon": "☀️",
-      "humidity": "62%",
-      "updated": "2026-08-06T23:47:36.572057Z",
+      "humidity": "74%",
+      "updated": "2026-08-07T02:03:12.743892Z",
       "data_source": "Open-Meteo API"
     },
     "cape": {
-      "temperature": "14°C",
-      "feels_like": "8°C",
-      "wind": "34 km/h 东南",
+      "temperature": "13°C",
+      "feels_like": "7°C",
+      "wind": "36 km/h 东",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "晴朗",
       "condition_icon": "☀️",
-      "humidity": "69%",
-      "updated": "2026-08-06T23:47:37.223509Z",
+      "humidity": "71%",
+      "updated": "2026-08-07T02:03:13.228008Z",
       "data_source": "Open-Meteo API"
     },
     "turkish": {
       "temperature": "22°C",
       "feels_like": "26°C",
-      "wind": "5 km/h 东北",
+      "wind": "4 km/h 北",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "多云",
       "condition_icon": "⛅",
       "humidity": "95%",
-      "updated": "2026-08-06T23:47:37.851864Z",
+      "updated": "2026-08-07T02:03:13.749592Z",
       "data_source": "Open-Meteo API"
     },
     "denmark": {
       "temperature": "2°C",
-      "feels_like": "-4°C",
-      "wind": "37 km/h 东北",
+      "feels_like": "-5°C",
+      "wind": "41 km/h 东北",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "小雨",
       "condition_icon": "🌧️",
       "humidity": "100%",
-      "updated": "2026-08-06T23:47:38.486296Z",
+      "updated": "2026-08-07T02:03:14.230950Z",
       "data_source": "Open-Meteo API"
     },
     "gibraltar": {
-      "temperature": "23°C",
-      "feels_like": "23°C",
+      "temperature": "22°C",
+      "feels_like": "21°C",
       "wind": "5 km/h 西",
       "wave": "N/A",
       "visibility": "10 km",
-      "condition": "晴间多云",
-      "condition_icon": "🌤️",
-      "humidity": "50%",
-      "updated": "2026-08-06T23:47:39.107852Z",
+      "condition": "晴朗",
+      "condition_icon": "☀️",
+      "humidity": "48%",
+      "updated": "2026-08-07T02:03:14.717320Z",
       "data_source": "Open-Meteo API"
     },
     "lombok": {
       "temperature": "25°C",
-      "feels_like": "28°C",
-      "wind": "11 km/h 东南",
+      "feels_like": "29°C",
+      "wind": "8 km/h 南",
       "wave": "N/A",
       "visibility": "10 km",
       "condition": "晴朗",
       "condition_icon": "☀️",
       "humidity": "79%",
-      "updated": "2026-08-06T23:47:39.726867Z",
+      "updated": "2026-08-07T02:03:15.192279Z",
       "data_source": "Open-Meteo API"
     }
   },
@@ -381,7 +381,7 @@
       "status": "高度关注",
       "status_icon": "⚠️",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726897Z"
+      "updated": "2026-08-07T02:03:15.192313Z"
     },
     "malacca": {
       "risk_level": "中",
@@ -398,7 +398,7 @@
       "status": "适度关注",
       "status_icon": "⚠️",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726900Z"
+      "updated": "2026-08-07T02:03:15.192317Z"
     },
     "suez": {
       "risk_level": "低",
@@ -407,7 +407,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726903Z"
+      "updated": "2026-08-07T02:03:15.192319Z"
     },
     "panama": {
       "risk_level": "低",
@@ -416,7 +416,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726915Z"
+      "updated": "2026-08-07T02:03:15.192334Z"
     },
     "mandeb": {
       "risk_level": "高",
@@ -440,7 +440,7 @@
       "status": "高度关注",
       "status_icon": "⚠️",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726917Z"
+      "updated": "2026-08-07T02:03:15.192336Z"
     },
     "cape": {
       "risk_level": "低",
@@ -449,7 +449,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726918Z"
+      "updated": "2026-08-07T02:03:15.192337Z"
     },
     "turkish": {
       "risk_level": "中",
@@ -466,7 +466,7 @@
       "status": "正常通航",
       "status_icon": "⚠️",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726920Z"
+      "updated": "2026-08-07T02:03:15.192339Z"
     },
     "denmark": {
       "risk_level": "低",
@@ -475,7 +475,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726924Z"
+      "updated": "2026-08-07T02:03:15.192344Z"
     },
     "gibraltar": {
       "risk_level": "低",
@@ -484,7 +484,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726926Z"
+      "updated": "2026-08-07T02:03:15.192346Z"
     },
     "lombok": {
       "risk_level": "低",
@@ -493,7 +493,7 @@
       "status": "正常通航",
       "status_icon": "✅",
       "last_incident": "2026-03-19",
-      "updated": "2026-08-06T23:47:39.726928Z"
+      "updated": "2026-08-07T02:03:15.192348Z"
     }
   },
   "traffic": {
@@ -505,7 +505,7 @@
       "queue_icon": "🔴",
       "congestion_level": "严重",
       "notes": "约3,200艘船舶滞留(IMO数据)，航运量下降90%，COSCO/Maersk/MSC已暂停预订",
-      "updated": "2026-08-06T23:47:39.726974Z",
+      "updated": "2026-08-07T02:03:15.192370Z",
       "data_source": "IMO, CNBC, AGBI 2026年3月"
     },
     "malacca": {
@@ -516,7 +516,7 @@
       "queue_icon": "🟡",
       "congestion_level": "轻微",
       "notes": "全球最繁忙海峡，有卫星信号干扰报告",
-      "updated": "2026-08-06T23:47:39.726979Z",
+      "updated": "2026-08-07T02:03:15.192375Z",
       "data_source": "EIA, ReCAAP 2026年3月"
     },
     "suez": {
@@ -527,7 +527,7 @@
       "queue_icon": "🔴",
       "congestion_level": "严重",
       "notes": "CMA CGM/Hapag-Lloyd再次暂停通航，胡塞武装攻击加剧",
-      "updated": "2026-08-06T23:47:39.726986Z",
+      "updated": "2026-08-07T02:03:15.192382Z",
       "data_source": "Maritime News, GCCA 2026年3月"
     },
     "panama": {
@@ -538,7 +538,7 @@
       "queue_icon": "🟢",
       "congestion_level": "无",
       "notes": "通航量反弹，预约系统运作正常",
-      "updated": "2026-08-06T23:47:39.726989Z",
+      "updated": "2026-08-07T02:03:15.192384Z",
       "data_source": "Panama Canal Authority 2026"
     },
     "mandeb": {
@@ -549,7 +549,7 @@
       "queue_icon": "🟢",
       "congestion_level": "极其严重",
       "notes": "交通大幅减少，MSC暂停通行，胡塞武装威胁持续",
-      "updated": "2026-08-06T23:47:39.726992Z",
+      "updated": "2026-08-07T02:03:15.192387Z",
       "data_source": "Windward, MSC 2026年3月"
     },
     "cape": {
@@ -560,7 +560,7 @@
       "queue_icon": "🟡",
       "congestion_level": "轻微",
       "notes": "苏伊士运河替代路线，绕行量增加",
-      "updated": "2026-08-06T23:47:39.726994Z",
+      "updated": "2026-08-07T02:03:15.192389Z",
       "data_source": "Windward, Maritime News 2026年3月"
     },
     "turkish": {
@@ -571,7 +571,7 @@
       "queue_icon": "🔴",
       "congestion_level": "严重",
       "notes": "严重拥堵，建议提前安排",
-      "updated": "2026-08-06T23:47:39.726996Z",
+      "updated": "2026-08-07T02:03:15.192392Z",
       "data_source": "Lloyd's List, Maritime Executive 2026"
     },
     "denmark": {
@@ -582,7 +582,7 @@
       "queue_icon": "🟢",
       "congestion_level": "无",
       "notes": "北欧航道",
-      "updated": "2026-08-06T23:47:39.727002Z",
+      "updated": "2026-08-07T02:03:15.192398Z",
       "data_source": "估算"
     },
     "gibraltar": {
@@ -593,7 +593,7 @@
       "queue_icon": "🟡",
       "congestion_level": "轻微",
       "notes": "地中海最繁忙海峡",
-      "updated": "2026-08-06T23:47:39.727005Z",
+      "updated": "2026-08-07T02:03:15.192401Z",
       "data_source": "估算 - 地中海咽喉"
     },
     "lombok": {
@@ -604,7 +604,7 @@
       "queue_icon": "🟢",
       "congestion_level": "无",
       "notes": "马六甲海峡替代路线",
-      "updated": "2026-08-06T23:47:39.727008Z",
+      "updated": "2026-08-07T02:03:15.192403Z",
       "data_source": "估算 - 马六甲替代路线"
     }
   },
@@ -612,66 +612,66 @@
     "ormuz": {
       "status": "极高风险",
       "detail": "强烈建议绕行，3,200艘船舶滞留(IMO数据)",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "极高"
     },
     "malacca": {
       "status": "适度关注",
       "detail": "保持常规警惕",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "中"
     },
     "suez": {
       "status": "适度关注",
       "detail": "保持常规警惕",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "中"
     },
     "panama": {
       "status": "稳定",
       "detail": "正常通行",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "低"
     },
     "mandeb": {
       "status": "高度关注",
       "detail": "建议绕行或谨慎通行",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "高"
     },
     "cape": {
       "status": "适度关注",
       "detail": "保持常规警惕",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "中"
     },
     "turkish": {
       "status": "适度关注",
       "detail": "保持常规警惕",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "中"
     },
     "denmark": {
       "status": "稳定",
       "detail": "正常通行",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "低"
     },
     "gibraltar": {
       "status": "稳定",
       "detail": "正常通行",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "低"
     },
     "lombok": {
       "status": "稳定",
       "detail": "正常通行",
-      "last_review": "2026-08-06",
+      "last_review": "2026-08-07",
       "advisory_level": "低"
     }
   },
-  "last_updated": "2026-08-07T07:47:39.727074+08:00",
-  "next_update": "2026-08-07T08:47:39.727084+08:00",
+  "last_updated": "2026-08-07T10:03:15.192474+08:00",
+  "next_update": "2026-08-07T11:03:15.192485+08:00",
   "data_sources": {
     "weather": "Open-Meteo API (https://open-meteo.com)",
     "traffic": "公开新闻源 (EgyptToday, Maritime News, Panama Canal Authority) + AISHub (如配置)",
