@@ -1,21 +1,11 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
+# Dependencies
+node_modules/
 
-# OS
+# Build output (not used — this is a single-file static site)
+.next/
+out/
+dist/
+
+# OS / editor
 .DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Logs
 *.log

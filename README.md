@@ -1,44 +1,26 @@
-# 全球关键水道通航监测平台
+# SBTI 人格测试 · Silly Big Personality Test
 
-实时监控全球十大关键水道的通航状况、安全风险、天气海洋条件。
+> 30 道荒诞题目，测出你是哪种抽象人格。全网爆火的趣味人格测试。
 
-## 监控水域
+- 在线地址：https://sbti.uichain.org
+- 技术栈：纯静态单文件站点（HTML + 内联 CSS/JS），零依赖、零构建
+- 部署：GitHub Pages（见 `.github/workflows/static.yml`，推送 `main` 即自动发布）
 
-1. 霍尔木兹海峡 (Hormuz Strait)
-2. 马六甲海峡 (Strait of Malacca)
-3. 苏伊士运河 (Suez Canal)
-4. 巴拿马运河 (Panama Canal)
-5. 曼德海峡 (Bab-el-Mandeb)
-6. 好望角 (Cape of Good Hope)
-7. 土耳其海峡 (Turkish Straits)
-8. 丹麦海峡 (Denmark Strait)
-9. 直布罗陀海峡 (Gibraltar Strait)
-10. 龙目海峡 (Lombok Strait)
+## 目录结构
 
-## 功能特性
+```
+.
+├── index.html          # 站点全部内容（自包含单文件）
+├── 404.html            # 主题化 404 页
+├── CNAME               # 自定义域名 sbti.uichain.org
+├── README.md
+└── .github/workflows/static.yml   # Pages 部署工作流
+```
 
-- 实时通航状态监控
-- 安全风险预警
-- 天气与海洋条件
-- 等待时间与排队情况
-- 搜索与筛选功能
-- 自动数据更新 (每10分钟)
+## 本地预览
 
-## 技术栈
+直接用浏览器打开 `index.html` 即可，无需任何构建步骤。
 
-- 纯静态网站 (GitHub Pages)
-- HTML/CSS/JavaScript
-- Leaflet 地图
-- Python 数据更新脚本
+## 说明
 
-## 访问地址
-
-- 主站: https://shipping.uichain.org
-- GitHub: https://github.com/leo-bone/shipping-monitor
-
-## 数据来源
-
-模拟数据 + 公开天气/海洋数据
-
----
-Built with ❤️ for global shipping monitoring
+本站为娱乐向趣味测试，结果仅供图一乐。
